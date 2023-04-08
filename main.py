@@ -81,7 +81,7 @@ def get_name(message):
         skip = types.ReplyKeyboardMarkup(resize_keyboard=True)
         skip.add(button_skip)
         bot.send_message(message.from_user.id, name +
-                         ' - Ля, кайфовое имя😉\nТеперь напиши про себя что-то, чтобы люди могли узнать тебя лучше\n\nБез этого никак прости :9', reply_markup=skip)
+                         ' - Ля, кайфовое имя😉\nТеперь напиши про себя что-то, чтобы люди могли узнать тебя лучше', reply_markup=skip)
         bot.register_next_step_handler(message, create_profile_description)
     elif str(message.text) in ban_symvols:
         bot.send_message(
@@ -100,6 +100,8 @@ def create_profile_description(message):  # получаем описание
     elif len(message.text) < 100:
         description = message.text
         bot.send_message(
+            message.from_user.id, 'Геолокацию НЕ отправлять!!! Я бот, пока что не могу оработать геолокацию, но скоро научусь)')
+        bot.send_message(
             message.from_user.id, 'С кайфом\n\nТеперь предлагаю заполнить город где вы собираетесь кайфовать🤪')
         bot.register_next_step_handler(message, create_profile_city)
     else:
@@ -107,8 +109,6 @@ def create_profile_description(message):  # получаем описание
         return bot.register_next_step_handler(message, create_profile_description)
 def create_profile_city(message):  # получаем город
     global city
-    bot.send_message(
-        message.from_user.id, 'Геолокацию НЕ отправлять!!! Я бот, пока что не могу оработать геолокацию, но скоро научусь)')
     if len(message.text) < 35 and (not str(message.text) in ban_symvols):
         city = message.text[0] + message.text[1:].lower()
         button_skip = types.InlineKeyboardButton("Пропустить")
@@ -394,8 +394,8 @@ profile_id = ""
 @bot.message_handler(content_types=['text'], func=lambda message: message.text == 'Найти человечка🔍')
 def search_profile(message):
     global profile_id
-    try:
-        if db.search_profile(str(db.get_info_user(str(message.from_user.id))[4]), str(db.get_info_user(str(message.from_user.id))[6]), str(db.get_info_user(str(message.from_user.id))[7])) != None \
+    # try:
+    if db.search_profile(str(db.get_info_user(str(message.from_user.id))[4]), str(db.get_info_user(str(message.from_user.id))[6]), str(db.get_info_user(str(message.from_user.id))[7])) != None \
             and len(db.search_profile(str(db.get_info_user(str(message.from_user.id))[4]), str(db.get_info_user(str(message.from_user.id))[6]), str(db.get_info_user(str(message.from_user.id))[7]))) != 0:
                 try:
                     profile_id = db.search_profile(str(db.get_info_user(str(message.from_user.id))[4]), str(db.get_info_user(str(message.from_user.id))[
@@ -407,7 +407,7 @@ def search_profile(message):
                 watch_profile(profile_id, message)
                 bot.register_next_step_handler(message, search_profile1)
 
-        elif db.search_profile2(str(db.get_info_user(str(message.from_user.id))[4]), str(db.get_info_user(str(message.from_user.id))[6]), str(db.get_info_user(str(message.from_user.id))[7])) != None \
+    elif db.search_profile2(str(db.get_info_user(str(message.from_user.id))[4]), str(db.get_info_user(str(message.from_user.id))[6]), str(db.get_info_user(str(message.from_user.id))[7])) != None \
             and len(db.search_profile2(str(db.get_info_user(str(message.from_user.id))[4]), str(db.get_info_user(str(message.from_user.id))[6]), str(db.get_info_user(str(message.from_user.id))[7]))) != 0:
                 try:
                     profile_id = db.search_profile2(str(db.get_info_user(str(message.from_user.id))[4]), str(db.get_info_user(str(message.from_user.id))[
@@ -420,13 +420,13 @@ def search_profile(message):
                     message.from_user.id, 'В твоем городе нет анкет или они закончились :(, есть в другом городе)')
                 watch_profile(profile_id, message)
                 bot.register_next_step_handler(message, search_profile1)
-        else:
+    else:
                 bot.send_message(message.from_user.id,
                                 'Людей твоего возраста нет или закончились анкеты')
                 return start(message)
-    except Exception as e:
-        bot.send_message(message.from_user.id, 'Не помнял, давай еще раз )')
-        return bot.register_next_step_handler(message, search_profile)
+    # except Exception as e:
+    #     bot.send_message(message.from_user.id, 'Не помнял, давай еще раз )')
+    #     return bot.register_next_step_handler(message, search_profile)
 def search_profile1(message):
     try:
         '''Функция поиска анкет после отправки пользователя своей оценки(лайк,дизлайк,репорт)'''

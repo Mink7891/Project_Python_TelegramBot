@@ -51,7 +51,7 @@ class dbworker:
         else:
             gender_search = 'мужчина'
         with self.connection:
-            return self.cursor.execute(f"SELECT `telegram_id` FROM `users` WHERE `age` = ? AND `city` = ? AND `gender` = ? ORDER BY `age` DESC", (age, city, gender_search)).fetchall()
+            return self.cursor.execute(f"SELECT `telegram_id` FROM `users` WHERE (`age` = ? OR `age` = ?-1 OR `age` = ?+1) AND `gender` = ? AND `city` = ?", (age, age, age, gender_search, city)).fetchall()
     def search_profile2(self, city, age, gender):
         '''поиск человека в другом городе'''
         if str(gender) == 'мужчина':
@@ -59,7 +59,7 @@ class dbworker:
         else:
             gender_search = 'мужчина'
         with self.connection:
-            return self.cursor.execute(f"SELECT `telegram_id` FROM `users` WHERE `age` = ? AND `gender` = ? ORDER BY `age` DESC", (age, gender_search)).fetchall()
+            return self.cursor.execute(f"SELECT `telegram_id` FROM `users` WHERE (`age` = ? OR `age` = ?-1 OR `age` = ?+1) AND `gender` = ?", (age, age, age, gender_search)).fetchall()
     def edit_profile_status(self,user_id,num):
         '''изменение статуса'''
         with self.connection:
