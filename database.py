@@ -1,6 +1,4 @@
 import sqlite3
-from threading import Thread
-
 class dbworker:
     def __init__(self, database_file):
         self.connection = sqlite3.connect(

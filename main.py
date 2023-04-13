@@ -9,7 +9,7 @@ config.TOKEN = 'TokenBot'
 bot = telebot.TeleBot(token=config.TOKEN)
 config.ADMIN_LIST = [576277089]
 @bot.message_handler(commands=['start'])
-def start(message):  # кнопка приветствия
+def start(message):
     markup = types.ReplyKeyboardMarkup(resize_keyboard=True)
     button_start = types.InlineKeyboardButton('Зайти в волшебный мир Demona🌀')
     markup.add(button_start)
@@ -52,6 +52,7 @@ gender = ""
 age = ""
 @bot.message_handler(content_types=['text'], func=lambda message: message.text == 'Админка⚙️')
 def admin(message: types.Message):
+    '''Функция для админов'''
     button_cancel = types.InlineKeyboardButton('Выйти❌')
     back = types.ReplyKeyboardMarkup(resize_keyboard=True)
     back.add(button_cancel)
@@ -70,10 +71,13 @@ def admin_send_msg(message):
     return start(message)
 @bot.message_handler(content_types=['text'], func=lambda message: message.text == 'Создать анкету📌')
 def create_profile(message):
+    '''Создание профиля'''
     bot.send_message(message.from_user.id,
-                     "Для того что бы создать свою стилёвую анкету, нужно ответить на несколько вопросов\nКак мне тебя называть?😉", reply_markup=types.ReplyKeyboardRemove())
+                     "Для того что бы создать свою стилёвую анкету, нужно ответить на несколько вопросов\nКак мне тебя называть?😉",
+                       reply_markup=types.ReplyKeyboardRemove())
     bot.register_next_step_handler(message, get_name)
 def get_name(message):
+    '''Функция для получения имени'''
     global name
     if len(str(message.text)) < 35 and (not str(message.text) in ban_symvols):
         name = message.text[0] + message.text[1:].lower()
@@ -89,7 +93,8 @@ def get_name(message):
     else:
         bot.send_message(message.from_user.id, 'Сообщение слишком длинное)')
         return bot.register_next_step_handler(message, get_name)
-def create_profile_description(message):  # получаем описание
+def create_profile_description(message):
+    '''Функция для получения описания'''
     global description
     if message.text == "Пропустить":
         bot.send_message(message.from_user.id, 'Без описания тоже норм)',
@@ -107,7 +112,8 @@ def create_profile_description(message):  # получаем описание
     else:
         bot.send_message(message.from_user.id, 'Сообщение слишком длинное)')
         return bot.register_next_step_handler(message, create_profile_description)
-def create_profile_city(message):  # получаем город
+def create_profile_city(message):
+    '''Функция для получения города'''
     global city
     if len(message.text) < 35 and (not str(message.text) in ban_symvols):
         city = message.text[0] + message.text[1:].lower()
@@ -115,7 +121,8 @@ def create_profile_city(message):  # получаем город
         skip = types.ReplyKeyboardMarkup(resize_keyboard=True)
         skip.add(button_skip)
         bot.send_message(
-            message.from_user.id, 'Прелестно, теперь добавим фоточку, что бы все знали какая красивая или какой ты абу бандит\n\nВажно отправлять фотографией, а не файлом!', reply_markup=skip)
+            message.from_user.id, 'Прелестно, теперь добавим фоточку, что бы все знали какая красивая или какой ты абу бандит\
+                \n\nВажно отправлять фотографией, а не файлом!', reply_markup=skip)
         bot.register_next_step_handler(message, create_profile_photo)
     elif str(message.text) in ban_symvols:
         bot.send_message(
@@ -124,6 +131,7 @@ def create_profile_city(message):  # получаем город
         bot.send_message(message.from_user.id, 'Сообщение слишком длинное)')
         return bot.register_next_step_handler(message, create_profile_city)
 def create_profile_photo(message):
+    '''Функция для получения пола'''
     try:
         button_male = types.InlineKeyboardButton('Мужчина')
 
@@ -141,12 +149,12 @@ def create_profile_photo(message):
 
         file_info = bot.get_file(message.photo[-1].file_id)
         downloaded_file = bot.download_file(file_info.file_path)
-        src = 'C:/Users/user/Desktop/project/photo/' + \
+        src = 'C:/Users/user/Desktop/Project_Python_TelegramBot/photo/' + \
             str(message.from_user.id) + '.jpg'
         with open(src, 'wb') as new_file:
             new_file.write(downloaded_file)
         bot.send_message(message.from_user.id,
-                         'Пипец ты соска)\n\nОсталось совсем немного,укажи свой пол(не тот который под тобой:)', reply_markup=gender_input)
+                         'Осталось совсем немного,укажи свой пол(не тот который под тобой:)', reply_markup=gender_input)
         bot.register_next_step_handler(message, create_profile_gender)
     except:
         if message.text != "Пропустить":
@@ -154,11 +162,13 @@ def create_profile_photo(message):
                              'Отправь, пожалуйста фото, а не это :)')
             return bot.register_next_step_handler(message, create_profile_photo)
 def create_profile_gender(message):
+    '''Функция создания профиля'''
     global gender
     if message.text == 'Мужчина' or message.text == 'Женщина':
         gender = message.text.lower()
         bot.send_message(message.from_user.id,
-                         'Замечательно!\nОсталось совсем чуть-чуть\n\nДавай же узнаем твой возвраст, что бы не сидеть восемь лет👮‍♂️', reply_markup=types.ReplyKeyboardRemove())
+                         'Замечательно!\nОсталось совсем чуть-чуть\n\nДавай же узнаем твой возвраст, что бы не сидеть восемь лет👮‍♂️',
+                            reply_markup=types.ReplyKeyboardRemove())
         bot.register_next_step_handler(message, create_profile_age)
     elif message.text == 'Абушка🤙':
         bot.send_message(message.from_user.id,
@@ -168,6 +178,7 @@ def create_profile_gender(message):
         bot.send_message(message.from_user.id, 'Репит плиз🥺')
         return bot.register_next_step_handler(message, create_profile_gender)
 def create_profile_age(message):
+    '''Функция для меню самого бота'''
     global age
     try:
         if int(message.text) < 6:
@@ -182,8 +193,9 @@ def create_profile_age(message):
             return bot.register_next_step_handler(message, create_profile_age)
         elif int(message.text) > 6 and int(message.text) < 54:
             age = message.text
-            db.create_profile(message.from_user.id, message.from_user.username, str(name), str(description), str(city), 'C:/Users/user/Desktop/project/photo/' + str(
-                message.from_user.id) + '.jpg', str(gender), str(age))  # self,telegram_id,telegram_username,name,description,city,photo,gender,age
+            db.create_profile(message.from_user.id, message.from_user.username, str(name), str(description), str(city), \
+                              'C:/Users/user/Desktop/Project_Python_TelegramBot/photo/' + str(
+                message.from_user.id) + '.jpg', str(gender), str(age))
             bot.send_message(message.from_user.id,
                              'Супер :)\n\nТвоя абу бандитская анкета создана, иииииииииииииииииииу🤘')
             db.edit_zero_profile_status(message.from_user.id)
@@ -197,7 +209,7 @@ def delete_profile(message):
     '''Функция для удаления анкеты'''
     try:
         db.delete_profile(message.from_user.id)
-        path = 'C:/Users/user/Desktop/project/photo/' + \
+        path = 'C:/Users/user/Desktop/Project_Python_TelegramBot/photo/' + \
                 str(message.from_user.id) + '.jpg'
         if os.path.exists(path):
             os.remove(path)
@@ -210,11 +222,11 @@ def delete_profile(message):
 def edit_profile(message):
     '''Функция для меню редактирования анкеты'''
     try:
-        file_path = 'C:/Users/user/Desktop/project/photo/' + \
+        file_path = 'C:/Users/user/Desktop/Project_Python_TelegramBot/photo/' + \
             str(message.from_user.id) + '.jpg'
         os.path.exists(file_path)
         if os.path.exists(file_path):
-            photo = open('C:/Users/user/Desktop/project/photo/' +
+            photo = open('C:/Users/user/Desktop/Project_Python_TelegramBot/photo/' +
                          str(message.from_user.id) + '.jpg', 'rb')
         button_again = types.InlineKeyboardButton('Заполнить анкету заново🔄')
         button_edit_description = types.InlineKeyboardButton(
@@ -228,8 +240,10 @@ def edit_profile(message):
         edit_profile_m = types.ReplyKeyboardMarkup(one_time_keyboard=True)
         edit_profile_m.add(button_again, button_edit_description,
                            button_edit_age, button_edit_city, button_edit_photo, button_cancel)
-        caption = 'Твоя анкета:\n\nИмя - ' + str(db.all_profile(str(message.from_user.id))[0][2]).title() + '\nОписание - ' + str(db.all_profile(str(message.from_user.id))[
-            0][3]) + '\nМесто жительство🌎 - ' + str(db.all_profile(str(message.from_user.id))[0][4]).title() + '\nСколько годиков?) - ' + str(db.all_profile(str(message.from_user.id))[0][6])
+        caption = 'Твоя анкета:\n\nИмя - ' + str(db.all_profile(str(message.from_user.id))[0][2]).title() + '\nОписание - ' + \
+            str(db.all_profile(str(message.from_user.id))[
+            0][3]) + '\nМесто жительство🌎 - ' + str(db.all_profile(str(message.from_user.id))[0][4]).title() + '\nСколько годиков?) - ' + \
+                str(db.all_profile(str(message.from_user.id))[0][6])
         if os.path.exists(file_path):
             bot.send_photo(message.from_user.id, photo,
                            caption=caption, reply_markup=edit_profile_m)
@@ -247,11 +261,11 @@ def exit(message):
 def edit_profile_again(message):
     '''Функция для заполнения анкеты заново'''
     try:
-        file_path = 'C:/Users/user/Desktop/project/photo/' + \
+        file_path = 'C:/Users/user/Desktop/Project_Python_TelegramBot/photo/' + \
             str(message.from_user.id) + '.jpg'
         if os.path.exists(file_path):
             db.delete_profile(message.from_user.id)
-            path = 'C:/Users/user/Desktop/project/photo/' + \
+            path = 'C:/Users/user/Desktop/Project_Python_TelegramBot/photo/' + \
                 str(message.from_user.id) + '.jpg'
             os.remove(path)
         return create_profile(message)
@@ -263,6 +277,7 @@ def edit_profile_again(message):
                      or message.text == 'Изменить место проживания🏢'
                      or message.text == 'Изменить фотку🎑')
 def edit_profile_age_description(message: types.Message):
+    '''Функция для изменения параметров (возраст, описание, город и т.д.)'''
     try:
         button_cancel = types.InlineKeyboardButton('Отменить❌')
         button_cancel_menu = types.ReplyKeyboardMarkup(one_time_keyboard=True)
@@ -277,7 +292,8 @@ def edit_profile_age_description(message: types.Message):
             bot.register_next_step_handler(message, edit_profile_description)
         elif message.text == 'Изменить место проживания🏢':
             bot.send_message(
-                message.from_user.id, 'Геолокацию НЕ отправлять!!! Я бот, пока что не могу оработать геолокацию, но скоро научусь)\n\nВведи новое место проживания', reply_markup=button_cancel_menu)
+                message.from_user.id, 'Геолокацию НЕ отправлять!!! Я бот, пока что не могу оработать геолокацию, но скоро научусь)\
+                    \n\nВведи новое место проживания', reply_markup=button_cancel_menu)
             bot.register_next_step_handler(message, edit_profile_city)
         elif message.text == 'Изменить фотку🎑':
             bot.send_message(
@@ -286,7 +302,8 @@ def edit_profile_age_description(message: types.Message):
     except:
         bot.send_message(message.from_user.id, 'Ошибка :(\nПовтори ещё раз!')
         return bot.register_next_step_handler(message, edit_profile_age_description)
-def change_profile_age(message):  # изменить возраст
+def change_profile_age(message):
+    '''Функция для изменения возраста'''
     global age
     try:
         if str(message.text) == 'Отменить❌':
@@ -313,6 +330,7 @@ def change_profile_age(message):  # изменить возраст
                          'Укажи правильный возраст, только цифры')
         return bot.register_next_step_handler(message, change_profile_age)
 def edit_profile_description(message):
+    '''Функция для изменения описания'''
     global description
     try:
         if str(message.text) == 'Отменить❌':
@@ -327,6 +345,7 @@ def edit_profile_description(message):
         bot.send_message(message.from_user.id, 'Повтори по братски)')
         return bot.register_next_step_handler(message, edit_profile_description)
 def edit_profile_city(message):
+    '''Функция для изменения города'''
     global city
     try:
         if str(message.text) == 'Отменить❌':
@@ -341,20 +360,21 @@ def edit_profile_city(message):
         bot.send_message(message.from_user.id, 'Репит, плииииииз')
         return bot.register_next_step_handler(message, edit_profile_city)
 def edit_profile_photo(message):
+    '''Функция для изменения фото'''
     try:
         if str(message.text) == 'Отменить❌':
             return edit_profile(message)
-        src = 'C:/Users/user/Desktop/project/photo/' + \
+        src = 'C:/Users/user/Desktop/Project_Python_TelegramBot/photo/' + \
             str(message.from_user.id) + '.jpg'
         os.path.exists(src)
         if os.path.exists(src):
-            path = 'C:/Users/user/Desktop/project/photo/' + \
+            path = 'C:/Users/user/Desktop/Project_Python_TelegramBot/photo/' + \
                 str(message.from_user.id) + '.jpg'
             os.remove(path)
 
         file_info = bot.get_file(message.photo[-1].file_id)
         downloaded_file = bot.download_file(file_info.file_path)
-        src = 'C:/Users/user/Desktop/project/photo/' + \
+        src = 'C:/Users/user/Desktop/Project_Python_TelegramBot/photo/' + \
             str(message.from_user.id) + '.jpg'
 
         with open(src, 'wb') as new_file:
@@ -369,6 +389,7 @@ def edit_profile_photo(message):
                          'Отправь, пожалуйста фото, а не это :)')
         return bot.register_next_step_handler(message, edit_profile_photo)
 def watch_profile(profile_id, message):
+    '''Функция просмотра анкет'''
     db.edit_profile_status(str(message.from_user.id),db.search_profile_status(str(message.from_user.id))[0])
     button_like = types.InlineKeyboardButton('👍')
     button_dislike = types.InlineKeyboardButton('👎')
@@ -378,7 +399,7 @@ def watch_profile(profile_id, message):
     name_profile = str(db.get_info_user(profile_id)[2])
     age_profile = str(db.get_info_user(profile_id)[6])
     description_profile = str(db.get_info_user(profile_id)[3])
-    file_path = 'C:/Users/user/Desktop/project/photo/' + \
+    file_path = 'C:/Users/user/Desktop/Project_Python_TelegramBot/photo/' + \
         str(profile_id) + '.jpg'
     if os.path.exists(file_path):
         photo_profile = open(file_path, 'rb')
@@ -393,43 +414,48 @@ def watch_profile(profile_id, message):
 profile_id = ""
 @bot.message_handler(content_types=['text'], func=lambda message: message.text == 'Найти человечка🔍')
 def search_profile(message):
+    '''Функция для поиска анкет'''
     global profile_id
-    # try:
-    if db.search_profile(str(db.get_info_user(str(message.from_user.id))[4]), str(db.get_info_user(str(message.from_user.id))[6]), str(db.get_info_user(str(message.from_user.id))[7])) != None \
-            and len(db.search_profile(str(db.get_info_user(str(message.from_user.id))[4]), str(db.get_info_user(str(message.from_user.id))[6]), str(db.get_info_user(str(message.from_user.id))[7]))) != 0:
-                try:
-                    profile_id = db.search_profile(str(db.get_info_user(str(message.from_user.id))[4]), str(db.get_info_user(str(message.from_user.id))[
-                        6]), str(db.get_info_user(str(message.from_user.id))[7]))[db.search_profile_status(str(message.from_user.id))[0]][0]
-                except IndexError:
-                    db.edit_zero_profile_status(message.from_user.id)
-                    profile_id = db.search_profile(str(db.get_info_user(str(message.from_user.id))[4]), str(db.get_info_user(str(message.from_user.id))[
-                        6]), str(db.get_info_user(str(message.from_user.id))[7]))[db.search_profile_status(str(message.from_user.id))[0]][0]
-                watch_profile(profile_id, message)
-                bot.register_next_step_handler(message, search_profile1)
+    try:
+        if db.search_profile(str(db.get_info_user(str(message.from_user.id))[4]), str(db.get_info_user(str(message.from_user.id))[6]), 
+                             str(db.get_info_user(str(message.from_user.id))[7])) != None \
+                and len(db.search_profile(str(db.get_info_user(str(message.from_user.id))[4]), str(db.get_info_user(str(message.from_user.id))[6]), 
+                                          str(db.get_info_user(str(message.from_user.id))[7]))) != 0:
+            try:
+                profile_id = db.search_profile(str(db.get_info_user(str(message.from_user.id))[4]), str(db.get_info_user(str(message.from_user.id))[
+                    6]), str(db.get_info_user(str(message.from_user.id))[7]))[db.search_profile_status(str(message.from_user.id))[0]][0]
+            except IndexError:
+                db.edit_zero_profile_status(message.from_user.id)
+                profile_id = db.search_profile(str(db.get_info_user(str(message.from_user.id))[4]), str(db.get_info_user(str(message.from_user.id))[
+                    6]), str(db.get_info_user(str(message.from_user.id))[7]))[db.search_profile_status(str(message.from_user.id))[0]][0]
+            watch_profile(profile_id, message)
+            bot.register_next_step_handler(message, search_profile1)
 
-    elif db.search_profile2(str(db.get_info_user(str(message.from_user.id))[4]), str(db.get_info_user(str(message.from_user.id))[6]), str(db.get_info_user(str(message.from_user.id))[7])) != None \
-            and len(db.search_profile2(str(db.get_info_user(str(message.from_user.id))[4]), str(db.get_info_user(str(message.from_user.id))[6]), str(db.get_info_user(str(message.from_user.id))[7]))) != 0:
-                try:
-                    profile_id = db.search_profile2(str(db.get_info_user(str(message.from_user.id))[4]), str(db.get_info_user(str(message.from_user.id))[
-                        6]), str(db.get_info_user(str(message.from_user.id))[7]))[db.search_profile_status(str(message.from_user.id))[0]][0]
-                except IndexError:
-                    db.edit_zero_profile_status(message.from_user.id)
-                    profile_id = db.search_profile2(str(db.get_info_user(str(message.from_user.id))[4]), str(db.get_info_user(str(message.from_user.id))[
-                        6]), str(db.get_info_user(str(message.from_user.id))[7]))[db.search_profile_status(str(message.from_user.id))[0]][0]
+        elif db.search_profile2(str(db.get_info_user(str(message.from_user.id))[4]), str(db.get_info_user(str(message.from_user.id))[6]), 
+                                str(db.get_info_user(str(message.from_user.id))[7])) != None \
+                and len(db.search_profile2(str(db.get_info_user(str(message.from_user.id))[4]), str(db.get_info_user(str(message.from_user.id))[6]), 
+                                           str(db.get_info_user(str(message.from_user.id))[7]))) != 0:
+            try:
+                profile_id = db.search_profile2(str(db.get_info_user(str(message.from_user.id))[4]), str(db.get_info_user(str(message.from_user.id))[
+                    6]), str(db.get_info_user(str(message.from_user.id))[7]))[db.search_profile_status(str(message.from_user.id))[0]][0]
+            except IndexError:
+                db.edit_zero_profile_status(message.from_user.id)
+                profile_id = db.search_profile2(str(db.get_info_user(str(message.from_user.id))[4]), str(db.get_info_user(str(message.from_user.id))[
+                    6]), str(db.get_info_user(str(message.from_user.id))[7]))[db.search_profile_status(str(message.from_user.id))[0]][0]
                 bot.send_message(
                     message.from_user.id, 'В твоем городе нет анкет или они закончились :(, есть в другом городе)')
-                watch_profile(profile_id, message)
-                bot.register_next_step_handler(message, search_profile1)
-    else:
-                bot.send_message(message.from_user.id,
-                                'Людей твоего возраста нет или закончились анкеты')
-                return start(message)
-    # except Exception as e:
-    #     bot.send_message(message.from_user.id, 'Не помнял, давай еще раз )')
-    #     return bot.register_next_step_handler(message, search_profile)
+            watch_profile(profile_id, message)
+            bot.register_next_step_handler(message, search_profile1)
+        else:
+            bot.send_message(message.from_user.id,
+                'Людей твоего возраста нет или закончились анкеты')
+            return start(message)
+    except:
+        bot.send_message(message.from_user.id, 'Не помнял, давай еще раз )')
+        return bot.register_next_step_handler(message, search_profile)
 def search_profile1(message):
     try:
-        '''Функция поиска анкет после отправки пользователя своей оценки(лайк,дизлайк,репорт)'''
+        '''Функция поиска анкет после отправки пользователя своей оценки(лайк,дизлайк)'''
         if str(message.text) == 'Выйти❌':
             return start(message)
         elif str(message.text) == '👍':
@@ -449,15 +475,17 @@ def sympathy(message):
         str(message.from_user.id))[6])
     description_profile_self = str(db.get_info_user(
         str(message.from_user.id)[3]))
-    file_path = 'C:/Users/user/Desktop/project/photo/' + \
+    file_path = 'C:/Users/user/Desktop/Project_Python_TelegramBot/photo/' + \
         str(message.from_user.id) + '.jpg'
     if os.path.exists(file_path):
         photo_profile = open(file_path, 'rb')
     city = str(db.get_info_user(message.from_user.id)[4]).title()
     if db.get_info_user(str(message.from_user.id)[3]) == None:
-        final_text_profile_self = f'Тобой кто то заинтересовался!\nСам в шоке😮..\n\n{name_profile_self},{age_profile_self},{city}\n\nЧего ты ждёшь,беги знакомиться - @{str(message.from_user.username)}'
+        final_text_profile_self = f'Тобой кто то заинтересовался!\nСам в шоке😮..\n\n{name_profile_self},{age_profile_self},{city} \
+            \n\nЧего ты ждёшь,беги знакомиться - @{str(message.from_user.username)}'
     else:
-        final_text_profile_self = f'Тобой кто то заинтересовался!\nСам в шоке😮..\n\n{name_profile_self},{age_profile_self},{city}\n{description_profile_self}\n\nЧего ты ждёшь,беги знакомиться - @{str(message.from_user.username)}'
+        final_text_profile_self = f'Тобой кто то заинтересовался!\nСам в шоке😮..\n\n{name_profile_self},{age_profile_self},{city}\n{description_profile_self}\
+            \n\nЧего ты ждёшь,беги знакомиться - @{str(message.from_user.username)}'
     if os.path.exists(file_path):
         bot.send_photo(profile_id, photo_profile,
             caption=final_text_profile_self)
