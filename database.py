@@ -16,7 +16,8 @@ class dbworker:
     def create_profile(self, telegram_id, telegram_username, name, description, city, photo, gender, age):
         '''Создаём анкету'''
         with self.connection:
-            return self.cursor.execute("INSERT INTO `users` (`telegram_id`,`telegram_username`,`name`,`description`,`city`,`photo`,`gender`,`age`) VALUES(?,?,?,?,?,?,?,?)", (telegram_id, telegram_username, name, description, city, photo, gender, age))
+            return self.cursor.execute("INSERT INTO `users` (`telegram_id`,`telegram_username`,`name`,`description`,`city`,`photo`,`gender`,`age`) VALUES(?,?,?,?,?,?,?,?)", \
+                                       (telegram_id, telegram_username, name, description, city, photo, gender, age))
 
     def delete_profile(self, user_id):
         '''Удаление анкеты'''
@@ -62,7 +63,8 @@ class dbworker:
             gender_search = 'мужчина'
 
         with self.connection:
-            return self.cursor.execute(f"SELECT `telegram_id` FROM `users` WHERE (`age` = ? OR `age` = ?-1 OR `age` = ?+1) AND `gender` = ? AND `city` = ?", (age, age, age, gender_search, city)).fetchall()
+            return self.cursor.execute(f"SELECT `telegram_id` FROM `users` WHERE (`age` = ? OR `age` = ?-1 OR `age` = ?+1) AND `gender` = ? AND `city` = ?", \
+                                        (age, age, age, gender_search, city)).fetchall()
 
     def search_profile2(self, city, age, gender):
         '''поиск человека в другом городе'''
@@ -73,7 +75,8 @@ class dbworker:
             gender_search = 'мужчина'
 
         with self.connection:
-            return self.cursor.execute(f"SELECT `telegram_id` FROM `users` WHERE (`age` = ? OR `age` = ?-1 OR `age` = ?+1) AND `gender` = ?", (age, age, age, gender_search)).fetchall()
+            return self.cursor.execute(f"SELECT `telegram_id` FROM `users` WHERE (`age` = ? OR `age` = ?-1 OR `age` = ?+1) AND `gender` = ?", \
+                                       (age, age, age, gender_search)).fetchall()
 
     def edit_profile_status(self,user_id,num):
         '''изменение статуса'''
