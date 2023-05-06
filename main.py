@@ -18,8 +18,8 @@ def start(message):
     bot.send_message(message.from_user.id,
                      'Привет👋\n\nЭто Demon бот🤠\n\nDemon - место для знакомств : \n - демонов👹\n - абушек🦹‍♀️ \n - инопланетян👽 ',
                      reply_markup=markup)
-@bot.message_handler(content_types=['text'], func=lambda message: message.text == 'Зайти в волшебный мир Demona🌀')
 
+@bot.message_handler(content_types=['text'], func=lambda message: message.text == 'Зайти в волшебный мир Demona🌀')
 def start(message):
     '''Функция для меню самого бота'''
     button_search = types.InlineKeyboardButton('Найти человечка🔍')
@@ -172,8 +172,10 @@ def create_profile_photo(message):
         downloaded_file = bot.download_file(file_info.file_path)
         src = 'C:/Users/user/Desktop/Project_Python_TelegramBot/photo/' + \
             str(message.from_user.id) + '.jpg'
+        
         with open(src, 'wb') as new_file:
             new_file.write(downloaded_file)
+
         bot.send_message(message.from_user.id,
                          'Осталось совсем немного,укажи свой пол(не тот который под тобой:)', reply_markup=gender_input)
         bot.register_next_step_handler(message, create_profile_gender)
@@ -241,8 +243,10 @@ def delete_profile(message):
         db.delete_profile(message.from_user.id)
         path = 'C:/Users/user/Desktop/Project_Python_TelegramBot/photo/' + \
                 str(message.from_user.id) + '.jpg'
+        
         if os.path.exists(path):
             os.remove(path)
+
         bot.send_message(message.from_user.id, 'Анкета успешно удалена!')
         return start(message)
 
@@ -257,6 +261,7 @@ def edit_profile(message):
         file_path = 'C:/Users/user/Desktop/Project_Python_TelegramBot/photo/' + \
             str(message.from_user.id) + '.jpg'
         os.path.exists(file_path)
+
         if os.path.exists(file_path):
             photo = open('C:/Users/user/Desktop/Project_Python_TelegramBot/photo/' +
                          str(message.from_user.id) + '.jpg', 'rb')
@@ -277,6 +282,7 @@ def edit_profile(message):
             str(db.all_profile(str(message.from_user.id))[
             0][3]) + '\nМесто жительство🌎 - ' + str(db.all_profile(str(message.from_user.id))[0][4]).title() + '\nСколько годиков?) - ' + \
                 str(db.all_profile(str(message.from_user.id))[0][6])
+        
         if os.path.exists(file_path):
             bot.send_photo(message.from_user.id, photo,
                            caption=caption, reply_markup=edit_profile_m)
@@ -321,6 +327,7 @@ def edit_profile_age_description(message: types.Message):
         button_cancel = types.InlineKeyboardButton('Отменить❌')
         button_cancel_menu = types.ReplyKeyboardMarkup(one_time_keyboard=True)
         button_cancel_menu.add(button_cancel)
+
         if message.text == 'Изменить количество годиков👶':
             bot.send_message(
                 message.from_user.id, 'Введи свой новый возвраст', reply_markup=button_cancel_menu)
@@ -384,12 +391,14 @@ def edit_profile_description(message):
     try:
         if str(message.text) == 'Отменить❌':
             return edit_profile(message)
+        
         description = message.text
         bot.send_message(
             message.from_user.id, 'Прекрасное описание броди\n\nОписание успешно изменено!')
         db.edit_description(
             description, message.from_user.id)
         return edit_profile(message)
+    
     except:
         bot.send_message(message.from_user.id, 'Повтори по братски)')
         return bot.register_next_step_handler(message, edit_profile_description)
@@ -417,6 +426,7 @@ def edit_profile_photo(message):
     try:
         if str(message.text) == 'Отменить❌':
             return edit_profile(message)
+        
         src = 'C:/Users/user/Desktop/Project_Python_TelegramBot/photo/' + \
             str(message.from_user.id) + '.jpg'
         os.path.exists(src)
@@ -433,6 +443,7 @@ def edit_profile_photo(message):
 
         with open(src, 'wb') as new_file:
             new_file.write(downloaded_file)
+
         bot.send_message(message.from_user.id,
                          'Фото изменено')
         db.edit_photo(
@@ -490,6 +501,7 @@ def search_profile(message):
                 db.edit_zero_profile_status(message.from_user.id)
                 profile_id = db.search_profile(str(db.get_info_user(str(message.from_user.id))[4]), str(db.get_info_user(str(message.from_user.id))[
                     6]), str(db.get_info_user(str(message.from_user.id))[7]))[db.search_profile_status(str(message.from_user.id))[0]][0]
+            
             watch_profile(profile_id, message)
             bot.register_next_step_handler(message, search_profile1)
 
@@ -508,6 +520,7 @@ def search_profile(message):
                     6]), str(db.get_info_user(str(message.from_user.id))[7]))[db.search_profile_status(str(message.from_user.id))[0]][0]
                 bot.send_message(
                     message.from_user.id, 'В твоем городе нет анкет или они закончились :(, есть в другом городе)')
+            
             watch_profile(profile_id, message)
             bot.register_next_step_handler(message, search_profile1)
 
@@ -567,4 +580,5 @@ def sympathy(message):
 
     else:
         bot.send_message(profile_id, final_text_profile_self)
+        
 bot.polling(none_stop=True)
