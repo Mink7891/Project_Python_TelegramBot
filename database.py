@@ -21,6 +21,7 @@ class dbworker:
         '''Удаление анкеты'''
         with self.connection:
             return self.cursor.execute("DELETE FROM `users` WHERE `telegram_id` = ?", (user_id,))
+
     def all_profile(self, user_id):
         '''поиск по анкетам'''
         with self.connection:
